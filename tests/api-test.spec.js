@@ -31,3 +31,31 @@ test("POST запит — створити користувача", async ({ req
   expect(body.name).toBe("Kostiantyn");
   expect(body.job).toBe("QA Automation Engineer");
 });
+
+test("PUT запит — оновити користувача", async ({ request }) => {
+  const response = await request.put("https://reqres.in/api/users/2", {
+    data: {
+      name: "Kostiantyn",
+      job: "Senior QA Engineer",
+    },
+  });
+
+  // PUT повертає 200 (OK), а не 201 — бо оновлюємо, а не створюємо
+  expect(response.status()).toBe(200);
+
+  const body = await response.json();
+  expect(body.job).toBe("Senior QA Engineer");
+});
+test("DELETE запит — видалити користувача", async ({ request }) => {
+  const response = await request.delete("https://reqres.in/api/users/2");
+
+  // DELETE зазвичай повертає 204 (No Content — видалено, повертати нічого)
+  expect(response.status()).toBe(204);
+});
+test("GET неіснуючого користувача — 404", async ({ request }) => {
+  // Користувача з таким номером не існує
+  const response = await request.get("https://reqres.in/api/users/99999");
+
+  // Сервер МАЄ відповісти 404 (Not Found)
+  expect(response.status()).toBe(404);
+});
